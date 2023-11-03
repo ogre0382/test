@@ -1,0 +1,4 @@
+google-cloud-bigquery
+opencv-python
+streamlit-cropper
+yt-dlp
