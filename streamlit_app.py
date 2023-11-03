@@ -5,7 +5,7 @@ from PIL import Image
 conn = sqlite3.connect('./static/TEST.db')
 
 cur = conn.cursor()  # カーソルを作成
-cur.execute('CREATE TABLE persons(id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING)')  # tableを作成する指示
+cur.execute('CREATE TABLE IF NOT EXISTS persons(id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING)')  # tableを作成する指示
 
 conn.commit()  # commit()した時点でDBファイルが更新されます
 conn.close()
