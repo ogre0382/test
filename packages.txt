@@ -1,1 +1,2 @@
 libgl1
+libfreetype6-dev
