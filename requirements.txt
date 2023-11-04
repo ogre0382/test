@@ -1,3 +1,5 @@
+pymupdf
+
 google-cloud-bigquery[pandas]
 google-cloud-vision
 opencv-python
