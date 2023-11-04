@@ -65,5 +65,5 @@ def test_easyocr():
 # image = Image.open('./app/static/logo2.png')
 #st.image(image)
 
-test_gcv()
+#test_gcv()
 test_easyocr()
