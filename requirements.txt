@@ -1,7 +1,6 @@
+easyocr
 google-cloud-bigquery[pandas]
 google-cloud-vision
 opencv-python
-paddleocr
-paddlepaddle
 streamlit-cropper
 yt-dlp

@@ -1,3 +1,5 @@
+import easyocr
+
 import streamlit as st
 from google.oauth2 import service_account
 from PIL import Image
@@ -8,7 +10,7 @@ import os
 # Imports the Google Cloud client library
 from google.cloud import vision
 
-from paddleocr import PaddleOCR
+
 
 # Google CloudのCloud Vision APIで画像から日本語の文字抽出をしてみた
 # https://dev.classmethod.jp/articles/google-cloud_vision-api/
@@ -46,15 +48,14 @@ def test_gcv():
                 output_text += '\n'
     print(output_text)
 
-def test_paddleocr():
+# pythonライブラリEasyOCRをWindowsにインストールする
+# https://qiita.com/1_MCZ_1/items/3870714ebca9be8d9afe
+def test_easyocr():
+    reader = easyocr.Reader(['en'])#日本語：ja, 英語：en
+    result = reader.readtext('./images/4565.0.jpg')
 
-    ocr = PaddleOCR(use_angle_cls=True, use_gpu=False, lang="japan")
-
-    img_path = './images/4565.0.jpg'
-    result = ocr.ocr(img_path, cls=True)[0]
-
-    for line in result:
-        print(line)
+    for text in result:
+        print(text)
 
 #where_req = ('first_color = True',)
 #print(' AND '.join(where_req))
@@ -63,4 +64,4 @@ def test_paddleocr():
 #st.image(image)
 
 test_gcv()
-test_paddleocr()
+test_easyocr()
