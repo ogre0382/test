@@ -1,4 +1,8 @@
-google-cloud-bigquery
+./local_wheels/PyMuPDF-1.20.2-cp311-cp311-win_amd64.whl
+google-cloud-bigquery[pandas]
+google-cloud-vision
 opencv-python
+paddleocr
+paddlepaddle
 streamlit-cropper
 yt-dlp
