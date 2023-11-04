@@ -47,6 +47,7 @@ def test_gcv():
                     ])
                 output_text += '\n'
     print(output_text)
+    st.write(output_text)
 
 # pythonライブラリEasyOCRをWindowsにインストールする
 # https://qiita.com/1_MCZ_1/items/3870714ebca9be8d9afe
@@ -56,6 +57,7 @@ def test_easyocr():
 
     for text in result:
         print(text)
+        st.write(text)
 
 #where_req = ('first_color = True',)
 #print(' AND '.join(where_req))
