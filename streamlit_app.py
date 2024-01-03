@@ -1,16 +1,11 @@
 import easyocr
-
-import streamlit as st
-from google.oauth2 import service_account
-from PIL import Image
-
 import io
 import os
-
-# Imports the Google Cloud client library
-from google.cloud import vision
-
-
+import streamlit as st
+from google.cloud import vision # Imports the Google Cloud client library
+from google.oauth2 import service_account
+from icecream import ic
+from PIL import Image
 
 # Google CloudのCloud Vision APIで画像から日本語の文字抽出をしてみた
 # https://dev.classmethod.jp/articles/google-cloud_vision-api/
@@ -27,14 +22,15 @@ def test_gcv():
     # Loads the image into memory
     with io.open(file_name, 'rb') as image_file:
         content = image_file.read()
-
     image = vision.Image(content=content)
 
     # Performs label detection on the image file
     response =  client.document_text_detection(
             image=image,
-            image_context={'language_hints': ['ja']}
+            image_context={'language_hints': ['en']}
         )
+    
+    print(response)
 
     # レスポンスからテキストデータを抽出
     output_text = ''
@@ -65,5 +61,10 @@ def test_easyocr():
 # image = Image.open('./app/static/logo2.png')
 #st.image(image)
 
+def test_cpu_count():
+    ic(os.cpu_count())
+    ic(len(os.sched_getaffinity(0)) )
+
 #test_gcv()
-test_easyocr()
+#test_easyocr()
+test_cpu_count()

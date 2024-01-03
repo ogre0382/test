@@ -1,6 +1,7 @@
 easyocr
 google-cloud-bigquery[pandas]
 google-cloud-vision
+icecream
 opencv-python
 streamlit-cropper
 yt-dlp
