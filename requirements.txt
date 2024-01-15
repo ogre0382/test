@@ -4,4 +4,5 @@ google-cloud-vision
 icecream
 opencv-python
 streamlit-cropper
+tqdm
 yt-dlp
