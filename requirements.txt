@@ -2,7 +2,7 @@ easyocr
 google-cloud-bigquery[pandas]
 google-cloud-vision
 icecream
-opencv-python
+tensorflow-cpu==2.14.0
+keras_ocr
 streamlit-cropper
-tqdm
 yt-dlp

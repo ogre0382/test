@@ -1,9 +1,14 @@
+import cv2
 import threading
 import time
 import easyocr
 import io
 import logging
+import matplotlib.pyplot as plt
 import os
+#os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+import keras_ocr
+
 import re
 import string
 import streamlit as st
@@ -59,12 +64,14 @@ def test_gcv():
 # pythonライブラリEasyOCRをWindowsにインストールする
 # https://qiita.com/1_MCZ_1/items/3870714ebca9be8d9afe
 def test_easyocr():
-    reader = easyocr.Reader(['en'])#日本語：ja, 英語：en
-    result = reader.readtext('./images/4565.0.jpg')
-
-    for text in result:
-        print(text)
-        st.write(text)
+    reader = easyocr.Reader(lang_list=['en'], verbose=False)#日本語：ja, 英語：en
+    img = cv2.imread('./images/oMhuTTOL0Vc&t=5725s.jpg', 0)
+    h,w = img.shape[0],img.shape[1]
+    img_btmL = img[int(h*0.6):int(h),int(0):int(w*0.5)]
+    txt=''
+    for ocr_res in reader.readtext(img_btmL, allowlist='irt'+string.ascii_uppercase, detail=0):
+        txt+=ocr_res
+    print('test_easyocr: ', re.sub(' ', '', txt))
 
 #where_req = ('first_color = True',)
 #print(' AND '.join(where_req))
@@ -279,9 +286,64 @@ def test_regexp():
     
     print(re.sub('[.& ]', '', 'Mr. GAME & WATCH'))
 
+def test_keras_ocr():
+    # keras-ocr will automatically download pretrained
+    # weights for the detector and recognizer.
+    # pipeline = keras_ocr.pipeline.Pipeline()
+    
+    # Get a set of three example images
+    # img = cv2.imread('./images/oMhuTTOL0Vc&t=5725s.jpg', 0)
+    # h,w = img.shape[0],img.shape[1]
+    # img_btmL = img[int(h*0.6):int(h),int(0):int(w*0.5)]
+    # img = keras_ocr.tools.read(img_btmL)
+    #img = keras_ocr.tools.read('./images/oMhuTTOL0Vc&t=5725s.jpg')
+    # print(type(img))
+
+    # Each list of predictions in prediction_groups is a list of
+    # (word, box) tuples.
+    # prediction_groups = pipeline.recognize([img.crop((0, h*0.6, w*0.5, h))])
+
+    # Print the predictions
+    # txt=''
+    # for ocr_res in prediction_groups[0]:
+    #     txt+=ocr_res
+    # print('test_keras_ocr: ', re.sub(' ', '', txt))
+
+
+    # keras-ocr will automatically download pretrained
+    # weights for the detector and recognizer.
+    # pipeline = keras_ocr.pipeline.Pipeline()
+
+    # Get a set of three example images
+    # images = [
+    #     keras_ocr.tools.read(url) for url in [
+    #         'https://upload.wikimedia.org/wikipedia/commons/b/bd/Army_Reserves_Recruitment_Banner_MOD_45156284.jpg',
+    #         #'https://upload.wikimedia.org/wikipedia/commons/e/e8/FseeG2QeLXo.jpg',
+    #         'https://upload.wikimedia.org/wikipedia/commons/b/b4/EUBanana-500x112.jpg'
+    #     ]
+    # ]
+
+    # images = [keras_ocr.tools.read('https://upload.wikimedia.org/wikipedia/commons/b/b4/EUBanana-500x112.jpg')]
+
+    # Each list of predictions in prediction_groups is a list of
+    # (word, box) tuples.
+    # prediction_groups = pipeline.recognize(images)
+
+    # Plot the predictions
+    # fig, axs = plt.subplots(nrows=len(images), figsize=(20, 20))
+    # for ax, image, predictions in zip(axs, images, prediction_groups):
+    #   keras_ocr.tools.drawAnnotations(image=image, predictions=predictions, ax=ax)
+    
+    # for predictions in prediction_groups:
+    #     print(len(predictions))
+    #     for predict in predictions:
+    #         print(predict[0])
+    
+    print('message check for keras-ocr')
+
 if __name__ == '__main__':
     #test_gcv()
-    #test_easyocr()
+    test_easyocr()
     #test_cpu_count()
     #test_thread()
     #test_bar()
@@ -291,4 +353,5 @@ if __name__ == '__main__':
     #test_st_empty2()
     #test_update_slider_numin()
     #test_add_script_run_ctx()
-    test_regexp()
+    #test_regexp()
+    test_keras_ocr()
