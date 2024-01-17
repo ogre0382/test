@@ -28,7 +28,7 @@ img = cv2.imread(img_path)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 img = cv2.resize(img, dsize=(1920,1080))
 h,w = img.shape[0],img.shape[1]
-img = img[int(h*0.6):int(h),int(0):int(w*0.5)]
+#img = img[int(h*0.6):int(h),int(0):int(w*0.5)]
 allowlist='KAMUIGANONDORF'#'irt'+string.ascii_uppercase
 blocklist=f'[^ {allowlist}]'
 lang_list=['en']
@@ -338,7 +338,10 @@ def test_keras_ocr():
         image=img_keras, predictions=prediction_groups[0], ax=ax
     )
     st.pyplot(fig)
-    print('test_keras_ocr:',re.sub(blocklist, '', prediction_groups[0][0][0].upper()))
+    txt = ''.join([prediction[0] for prediction in prediction_groups[0]])
+    print(prediction_groups[0])
+    print(txt)
+    print('test_keras_ocr:',re.sub(blocklist, '', txt.upper()))
 
 if __name__ == '__main__':
     #test_gcv()
