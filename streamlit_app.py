@@ -6,12 +6,15 @@ import io
 import logging
 import matplotlib.pyplot as plt
 import os
-#os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+import tensorflow as tf
+tf.get_logger().setLevel("ERROR")
 import keras_ocr
-
 import re
 import string
 import streamlit as st
+import sys
+
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 from google.cloud import vision # Imports the Google Cloud client library
 from google.oauth2 import service_account
@@ -19,6 +22,14 @@ from icecream import ic
 from PIL import Image
 from streamlit import session_state as ss
 from tqdm import tqdm
+
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore
+def enablePrint():
+    sys.stdout = sys.__stdout__
 
 def init_ss(key,value=None):
     if key not in ss: ss[key] = value
@@ -310,9 +321,10 @@ def test_keras_ocr():
     # print('test_keras_ocr: ', re.sub(' ', '', txt))
 
 
+    blockPrint()
     # keras-ocr will automatically download pretrained
     # weights for the detector and recognizer.
-    # pipeline = keras_ocr.pipeline.Pipeline()
+    pipeline = keras_ocr.pipeline.Pipeline()
 
     # Get a set of three example images
     # images = [
@@ -323,27 +335,29 @@ def test_keras_ocr():
     #     ]
     # ]
 
-    # images = [keras_ocr.tools.read('https://upload.wikimedia.org/wikipedia/commons/b/b4/EUBanana-500x112.jpg')]
+    images = [keras_ocr.tools.read('https://upload.wikimedia.org/wikipedia/commons/b/b4/EUBanana-500x112.jpg')]
 
     # Each list of predictions in prediction_groups is a list of
     # (word, box) tuples.
-    # prediction_groups = pipeline.recognize(images)
+    prediction_groups = pipeline.recognize(images)
 
     # Plot the predictions
     # fig, axs = plt.subplots(nrows=len(images), figsize=(20, 20))
     # for ax, image, predictions in zip(axs, images, prediction_groups):
     #   keras_ocr.tools.drawAnnotations(image=image, predictions=predictions, ax=ax)
     
-    # for predictions in prediction_groups:
-    #     print(len(predictions))
-    #     for predict in predictions:
-    #         print(predict[0])
+    enablePrint()
+    for predictions in prediction_groups:
+        print(len(predictions))
+        for predict in predictions:
+            print(predict[0])
+            st.write(predict[0])
     
-    print('message check for keras-ocr')
+    #print('message check for keras-ocr')
 
 if __name__ == '__main__':
     #test_gcv()
-    test_easyocr()
+    #test_easyocr()
     #test_cpu_count()
     #test_thread()
     #test_bar()
