@@ -23,6 +23,16 @@ from PIL import Image
 from streamlit import session_state as ss
 from tqdm import tqdm
 
+img_path='./images/oMhuTTOL0Vc&t=5725s.jpg'
+img = cv2.imread(img_path)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+img = cv2.resize(img, dsize=(1920,1080))
+h,w = img.shape[0],img.shape[1]
+img = img[int(h*0.6):int(h),int(0):int(w*0.5)]
+allowlist='KAMUIGANONDORF'#'irt'+string.ascii_uppercase
+blocklist=f'[^ {allowlist}]'
+lang_list=['en']
+
 # Disable
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
@@ -44,45 +54,51 @@ def test_gcv():
     client = vision.ImageAnnotatorClient(credentials=credentials)
 
     # The name of the image file to annotate
-    file_name = os.path.abspath('./images/4565.0.jpg')
+    # file_name = os.path.abspath(img_path)
 
-    # Loads the image into memory
-    with io.open(file_name, 'rb') as image_file:
-        content = image_file.read()
-    image = vision.Image(content=content)
+    # # Loads the image into memory
+    # with io.open(file_name, 'rb') as image_file:
+    #     content = image_file.read()
+    # image = vision.Image(content=content)
 
     # Performs label detection on the image file
-    response =  client.document_text_detection(
-            image=image,
-            image_context={'language_hints': ['en']}
-        )
+    # response =  client.document_text_detection(
+    #         image=image,
+    #         image_context={'language_hints': ['en']}
+    #     )
     
-    print(response)
+    # print(response)
 
     # レスポンスからテキストデータを抽出
-    output_text = ''
-    for page in response.full_text_annotation.pages:
-        for block in page.blocks:
-            for paragraph in block.paragraphs:
-                for word in paragraph.words:
-                    output_text += ''.join([
-                        symbol.text for symbol in word.symbols
-                    ])
-                output_text += '\n'
-    print(output_text)
-    st.write(output_text)
+    # output_text = ''
+    # for page in response.full_text_annotation.pages:
+    #     for block in page.blocks:
+    #         for paragraph in block.paragraphs:
+    #             for word in paragraph.words:
+    #                 output_text += ''.join([
+    #                     symbol.text for symbol in word.symbols
+    #                 ])
+    #             output_text += '\n'
+    # print(output_text)
+    # st.write(output_text)
+
+    # Loads the image into memory (bytes)
+    content = cv2.imencode(".png", img)[1].tostring()
+    image = vision.Image(content=content)
+
+    # Performs text detection on the image
+    response = client.text_detection(image=image, image_context={'language_hints':lang_list})
+    txt = response.full_text_annotation.text
+    print('test_gcv:',re.sub(blocklist, '', txt))
 
 # pythonライブラリEasyOCRをWindowsにインストールする
 # https://qiita.com/1_MCZ_1/items/3870714ebca9be8d9afe
 def test_easyocr():
-    reader = easyocr.Reader(lang_list=['en'], verbose=False)#日本語：ja, 英語：en
-    img = cv2.imread('./images/oMhuTTOL0Vc&t=5725s.jpg', 0)
-    h,w = img.shape[0],img.shape[1]
-    img_btmL = img[int(h*0.6):int(h),int(0):int(w*0.5)]
+    reader = easyocr.Reader(lang_list=lang_list, verbose=False)#日本語：ja, 英語：en
     txt=''
-    for ocr_res in reader.readtext(img_btmL, allowlist='irt'+string.ascii_uppercase, detail=0):
+    for ocr_res in reader.readtext(img, allowlist=allowlist, detail=0):
         txt+=ocr_res
-    print('test_easyocr: ', re.sub(' ', '', txt))
+    print('test_easyocr:', re.sub(' ', '', txt))
 
 #where_req = ('first_color = True',)
 #print(' AND '.join(where_req))
@@ -241,6 +257,7 @@ def test_st_empty2():
 
 def update_slider():
     ss.slider = ss.numeric
+
 def update_numin():
     ss.numeric = ss.slider            
 
@@ -298,66 +315,34 @@ def test_regexp():
     print(re.sub('[.& ]', '', 'Mr. GAME & WATCH'))
 
 def test_keras_ocr():
-    # keras-ocr will automatically download pretrained
-    # weights for the detector and recognizer.
-    # pipeline = keras_ocr.pipeline.Pipeline()
-    
-    # Get a set of three example images
-    # img = cv2.imread('./images/oMhuTTOL0Vc&t=5725s.jpg', 0)
-    # h,w = img.shape[0],img.shape[1]
-    # img_btmL = img[int(h*0.6):int(h),int(0):int(w*0.5)]
-    # img = keras_ocr.tools.read(img_btmL)
-    #img = keras_ocr.tools.read('./images/oMhuTTOL0Vc&t=5725s.jpg')
-    # print(type(img))
-
-    # Each list of predictions in prediction_groups is a list of
-    # (word, box) tuples.
-    # prediction_groups = pipeline.recognize([img.crop((0, h*0.6, w*0.5, h))])
-
-    # Print the predictions
-    # txt=''
-    # for ocr_res in prediction_groups[0]:
-    #     txt+=ocr_res
-    # print('test_keras_ocr: ', re.sub(' ', '', txt))
-
 
     blockPrint()
+    
     # keras-ocr will automatically download pretrained
     # weights for the detector and recognizer.
     pipeline = keras_ocr.pipeline.Pipeline()
 
-    # Get a set of three example images
-    # images = [
-    #     keras_ocr.tools.read(url) for url in [
-    #         'https://upload.wikimedia.org/wikipedia/commons/b/bd/Army_Reserves_Recruitment_Banner_MOD_45156284.jpg',
-    #         #'https://upload.wikimedia.org/wikipedia/commons/e/e8/FseeG2QeLXo.jpg',
-    #         'https://upload.wikimedia.org/wikipedia/commons/b/b4/EUBanana-500x112.jpg'
-    #     ]
-    # ]
+    # Get a set of the example image
+    img_keras = keras_ocr.tools.read(img)
 
-    images = [keras_ocr.tools.read('https://upload.wikimedia.org/wikipedia/commons/b/b4/EUBanana-500x112.jpg')]
+    st.image(img_keras)
 
     # Each list of predictions in prediction_groups is a list of
     # (word, box) tuples.
-    prediction_groups = pipeline.recognize(images)
+    prediction_groups = pipeline.recognize([img_keras])
 
-    # Plot the predictions
-    # fig, axs = plt.subplots(nrows=len(images), figsize=(20, 20))
-    # for ax, image, predictions in zip(axs, images, prediction_groups):
-    #   keras_ocr.tools.drawAnnotations(image=image, predictions=predictions, ax=ax)
-    
     enablePrint()
-    for predictions in prediction_groups:
-        print(len(predictions))
-        for predict in predictions:
-            print(predict[0])
-            st.write(predict[0])
     
-    #print('message check for keras-ocr')
+    fig, ax = plt.subplots(figsize=(20, 20))
+    keras_ocr.tools.drawAnnotations(
+        image=img_keras, predictions=prediction_groups[0], ax=ax
+    )
+    st.pyplot(fig)
+    print('test_keras_ocr:',re.sub(blocklist, '', prediction_groups[0][0][0].upper()))
 
 if __name__ == '__main__':
     #test_gcv()
-    #test_easyocr()
+    test_easyocr()
     #test_cpu_count()
     #test_thread()
     #test_bar()
